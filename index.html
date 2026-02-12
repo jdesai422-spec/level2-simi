@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 2 Unlocked</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    background: linear-gradient(135deg, #ffd6e8, #ffc4dd);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    color: #333;
+}
+
+.container {
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    padding: 40px;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+h1 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 15px;
+    opacity: 0.8;
+}
+
+button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 30px;
+    background: #ff4f9a;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    background: #ff2f85;
+}
+
+.option {
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid #ff9fc9;
+    cursor: pointer;
+    transition: 0.25s;
+    background: white;
+}
+
+.option:hover {
+    background: #ffe5f2;
+}
+
+.progress {
+    height: 6px;
+    background: #ffe5f2;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #ff4f9a;
+    transition: width 0.4s ease;
+}
+
+#musicToggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 14px;
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="container" id="game">
+    <h1>Relationship v2.0</h1>
+    <p>Level 1 Complete: 2 Years Survived</p>
+    <p>Simi, are you ready to unlock Level 2?</p>
+    <button onclick="startGame()">Start Level 2</button>
+</div>
+
+<div id="musicToggle" onclick="toggleMusic()">🔊 Music</div>
+
+<audio id="lofi" loop>
+    <source src="LOFI_LINK_HERE.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const questions = [
+    {
+        question: "Who fell first?",
+        options: ["Simi", "Jay", "It was mutual"],
+        answer: 1
+    },
+    {
+        question: "Who said I love you first?",
+        options: ["Simi", "Jay", "We don't talk about it"],
+        answer: 0
+    },
+    {
+        question: "What are we celebrating?",
+        options: ["Just Valentine's", "Just 2 Years", "Both, obviously"],
+        answer: 2
+    }
+];
+
+let currentQuestion = 0;
+let musicPlaying = false;
+
+function startGame() {
+    const music = document.getElementById("lofi");
+    music.play();
+    musicPlaying = true;
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const game = document.getElementById("game");
+    const q = questions[currentQuestion];
+
+    game.innerHTML = `
+        <div class="progress">
+            <div class="progress-bar" style="width:${(currentQuestion/questions.length)*100}%"></div>
+        </div>
+        <h1>${q.question}</h1>
+        ${q.options.map((opt, index) =>
+            `<div class="option" onclick="checkAnswer(${index})">${opt}</div>`
+        ).join("")}
+    `;
+}
+
+function checkAnswer(index) {
+    if (index === questions[currentQuestion].answer) {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            renderQuestion();
+        } else {
+            celebrate();
+        }
+    } else {
+        alert("Hmm... try again 😉");
+    }
+}
+
+function celebrate() {
+    const game = document.getElementById("game");
+    game.innerHTML = `
+        <h1>Level 2 Unlocked</h1>
+        <p>Simi, you have officially unlocked your 2 Year Anniversary Experience.</p>
+        <p><strong>Mission:</strong> Saturday. 7PM.</p>
+        <p>Dress cute. Be ready.</p>
+        <p>Further details classified.</p>
+    `;
+    launchConfetti();
+}
+
+function toggleMusic() {
+    const music = document.getElementById("lofi");
+    const toggle = document.getElementById("musicToggle");
+
+    if (musicPlaying) {
+        music.pause();
+        musicPlaying = false;
+        toggle.innerText = "🔇 Music";
+    } else {
+        music.play();
+        musicPlaying = true;
+        toggle.innerText = "🔊 Music";
+    }
+}
+
+function launchConfetti() {
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+    for (let i = 0; i < 120; i++) {
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 6 + 2,
+            speed: Math.random() * 3 + 2
+        });
+    }
+
+    function update() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pieces.forEach(p => {
+            p.y += p.speed;
+            if (p.y > canvas.height) p.y = 0;
+            ctx.fillStyle = "#ff4f9a";
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        requestAnimationFrame(update);
+    }
+
+    update();
+}
+</script>
+
+</body>
+</html>
